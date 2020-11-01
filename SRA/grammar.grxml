@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE grammar PUBLIC "-//W3C//DTD GRAMMAR 1.0//EN"
+                "grammar.dtd">
+<!-- the default grammar language is FR  -->
+<grammar  version="1.0"
+          mode ="voice"
+          xmlns="http://www.w3.org/2001/06/grammar"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.w3.org/2001/06/grammar
+                              grammar.xsd"
+          xml:lang="fr-FR" root="answer" tag-format="semantics/1.0">
+          
+  <rule id="answer" scope="public"> 
+    <ruleref special="GARBAGE" /> 
+    <one-of>
+      <item>
+        <ruleref uri="#position"/>
+        <tag>out="ici";</tag>
+      </item>
+      <item>
+        <ruleref uri="#objet"/>
+        <tag>out="cet objet";</tag>
+      </item>
+      <item>
+        <ruleref uri="#rectangle"/>
+        <tag>out="ce rectangle";</tag>
+      </item>
+      <item>
+        <ruleref uri="#ellipse"/>
+        <tag>out="cette ellipse";</tag>
+      </item>
+      <item>
+        <ruleref uri="#bleu"/>
+        <tag>out="bleu";</tag>
+      </item>
+      <item>
+        <ruleref uri="#rouge"/>
+        <tag>out="rouge";</tag>
+      </item>
+      <item>
+        <ruleref uri="#noir"/>
+        <tag>out="noir";</tag>
+      </item>
+      <item>
+        <ruleref uri="#vert"/>
+        <tag>out="vert";</tag>
+      </item>
+    </one-of>
+    <ruleref special="GARBAGE" />
+  </rule>
+  <rule id="position">
+    <one-of>
+      <item>ici</item>
+      <item>là</item>
+      <item>à cette position</item>
+    </one-of>
+  </rule>
+  <rule id="objet">
+    cet objet
+  </rule>
+  <rule id="rectangle">
+    ce rectangle
+  </rule>
+  <rule id="ellipse">
+    cette ellipse
+  </rule>
+  <rule id="bleu">
+    bleu
+  </rule>
+  <rule id="rouge">
+    rouge
+  </rule>
+  <rule id="noir">
+    noir
+  </rule>
+  <rule id="vert">
+    vert
+  </rule>
+</grammar>
