@@ -51,8 +51,8 @@
   <rule id="position">
     <one-of>
       <item>ici</item>
-      <item>là</item>
-      <item>à cette position</item>
+      <item>la�</item>
+      <item>a cette position</item>
     </one-of>
   </rule>
   <rule id="objet">

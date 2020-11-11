@@ -14,14 +14,14 @@ import fr.dgac.ivy.IvyException;
 import fr.dgac.ivy.IvyMessageListener;
 
 public class Recognizer {
-	
+
 	Ivy bus;
 	int state;
 	Stroke stroke;
 	HashMap<Stroke, String> strokes;
 	int distance;
 	String result;
-	
+
 	@SuppressWarnings("unchecked")
 	public Recognizer() throws IOException, ClassNotFoundException {
 		this.state = 0;
@@ -35,12 +35,12 @@ public class Recognizer {
 		} catch(ClassCastException e) {
 			e.printStackTrace();
 		}
-		
-		in.close(); 
-		file.close(); 
+
+		in.close();
+		file.close();
 		System.out.println("Object has been deserialized\n"
 		       + "Data after Deserialization.");
-		Ivy bus = new Ivy("Test", "Premier message", new IvyApplicationListener() {
+		Ivy bus = new Ivy("Recognizer", "Premier message", new IvyApplicationListener() {
 	
 			@Override
 			public void connect(IvyClient client) {
@@ -61,8 +61,6 @@ public class Recognizer {
 			public void directMessage(IvyClient client, int id, String msgarg) {
 				// TODO Auto-generated method stub
 			}
-			
-			
 			
 		});
 	
