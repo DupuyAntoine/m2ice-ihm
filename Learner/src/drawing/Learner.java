@@ -24,7 +24,7 @@ public class Learner {
 	public Learner() {
 		this.state = 0;
 		strokes = new HashMap<Stroke, String>();
-		Ivy bus = new Ivy("Test", "Premier message", new IvyApplicationListener() {
+		Ivy bus = new Ivy("GestureLearner", "...Initialisation GestureLearner...", new IvyApplicationListener() {
 	
 			@Override
 			public void connect(IvyClient client) {

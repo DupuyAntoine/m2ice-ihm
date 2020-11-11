@@ -40,7 +40,7 @@ public class Recognizer {
 		file.close();
 		System.out.println("Object has been deserialized\n"
 		       + "Data after Deserialization.");
-		Ivy bus = new Ivy("Recognizer", "Premier message", new IvyApplicationListener() {
+		Ivy bus = new Ivy("GestureRecognizer", "...Initialisation GestureRecognizer...", new IvyApplicationListener() {
 	
 			@Override
 			public void connect(IvyClient client) {

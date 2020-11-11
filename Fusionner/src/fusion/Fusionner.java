@@ -9,8 +9,13 @@ import fr.dgac.ivy.IvyMessageListener;
 
 public class Fusionner {
 	
+	int state = 0;
+	int timer = 3;
+	String command = "";
+	Boolean isComplete = false;
+	
 	public Fusionner() {
-		Ivy bus = new Ivy("Fusionner", "Premier message", new IvyApplicationListener() {
+		Ivy bus = new Ivy("Fusionner", "...Initialisation Fusionner...", new IvyApplicationListener() {
 			
 			@Override
 			public void connect(IvyClient client) {
@@ -36,8 +41,14 @@ public class Fusionner {
 	
 		try {
 			bus.start("localhost:2010");
-			bus.bindMsg("VoiceRecognizer:", new IvyMessageListener() {
+			bus.bindMsg("VoiceRecognizer:(.*)", new IvyMessageListener() {
 	
+				@Override
+				public void receive(IvyClient client, String[] args) {
+				}
+			});
+			bus.bindMsg("GestureRecognizer:(.*)", new IvyMessageListener() {
+				
 				@Override
 				public void receive(IvyClient client, String[] args) {
 				}

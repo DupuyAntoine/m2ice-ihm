@@ -12,7 +12,7 @@ public class VoiceRecognizer {
 	Ivy bus;
 
 	public VoiceRecognizer() {
-		Ivy bus = new Ivy("VoiceRecognizer", "Premier message", new IvyApplicationListener() {
+		Ivy bus = new Ivy("VoiceRecognizer", "...Initialisation VoiceRecognizer...", new IvyApplicationListener() {
 			
 			@Override
 			public void connect(IvyClient client) {
