@@ -9,6 +9,7 @@ import fr.dgac.ivy.IvyApplicationListener;
 import fr.dgac.ivy.IvyClient;
 import fr.dgac.ivy.IvyException;
 import fr.dgac.ivy.IvyMessageListener;
+import geometry.Coords;
 import geometry.Ellipse;
 import geometry.Geometry;
 import geometry.Rectangle;
@@ -18,8 +19,8 @@ public class Fusionner {
 	
 	int state = 0;
 	int timer = 3;
-	Rectangle rectangle;
-	Ellipse ellipse;
+	Coords coordsColor = new Coords();
+	String colorPos;
 	List<Geometry> geometries = new LinkedList<>();
 	Command command = new Command();
 	
@@ -54,28 +55,19 @@ public class Fusionner {
 	
 				@Override
 				public void receive(IvyClient client, String[] args) {
+					String color;
 					switch(state) {
 						case 0:
 							break;
 						case 1:
 							System.out.println("Je reçois la couleur " + args[0]);
-							String color = ColorTranslator.translateColor(args[0]);
+							color = ColorTranslator.translateColor(args[0]);
 							System.out.println("Couleur: " + color);
-							if (!(rectangle == null)) {
-								rectangle.setColor(color);								
-								state = 1;
-								
-							}
-							if (!(ellipse == null)) {
-								ellipse.setColor(color);								
-								state = 1;
-							}
+							command.getGeometry().setColor(color);								
 							break;
 						case 2:
 							break;
 						case 3:
-							break;
-						case 4:
 							break;
 						default: break;
 					}
@@ -97,7 +89,33 @@ public class Fusionner {
 							break;
 						case 3:
 							break;
-						case 4:
+						default: break;
+					}
+				}
+
+			});
+			bus.bindMsg("VoiceRecognizer:ThisColor=(.*)", new IvyMessageListener() {
+
+				@Override
+				public void receive(IvyClient client, String[] args) {
+					switch(state) {
+						case 0:
+							break;
+						case 1:
+							break;
+						case 2:
+							break;
+						case 3:
+							try {
+								System.out.println("Test point");
+								bus.sendMsg("Palette:TesterPoint x=" 
+										+ coordsColor.getX()
+										+ " y="
+										+ coordsColor.getY());
+							} catch (IvyException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 							break;
 						default: break;
 					}
@@ -105,7 +123,7 @@ public class Fusionner {
 
 			});
 
-			bus.bindMsg("GestureRecognizer:(.*)", new IvyMessageListener() {
+			bus.bindMsg("GestureRecognizer:Forme=(.*)", new IvyMessageListener() {
 				
 				@Override
 				public void receive(IvyClient client, String[] args) {
@@ -114,17 +132,19 @@ public class Fusionner {
 							System.out.println("Forme");
 							if (args[0].equals("Rectangle")) {
 								
-								rectangle = new Rectangle(
-										"R" + Integer.toString(geometries.size() + 1));
 								state = 1;
-								
-								geometries.add(rectangle);
+								Rectangle rect = new Rectangle(
+										"R" + Integer.toString(geometries.size() + 1));
+								command.setGeometry(rect);
+								command.setAction("CreerRectangle");
+								geometries.add(rect);
 							}
 							if (args[0].equals("Ellipse")) {
-								ellipse = new Ellipse(
-										"E" + Integer.toString(geometries.size() + 1));
 								state = 1;
-								System.out.println(ellipse);
+								Ellipse ellipse = new Ellipse(
+										"E" + Integer.toString(geometries.size() + 1));
+								command.setGeometry(ellipse);
+								command.setAction("CreerEllipse");
 								geometries.add(ellipse);
 							}
 							if (args[0].equals("Supprimer")) {
@@ -140,7 +160,6 @@ public class Fusionner {
 							break;
 						case 1:
 						case 2:
-						case 3:
 						default: break;
 					}
 				}
@@ -155,53 +174,101 @@ public class Fusionner {
 						case 0:
 							break;
 						case 1:
+							System.out.println("Position couleur");
+							coordsColor.setX(Integer.parseInt(args[0]));
+							coordsColor.setY(Integer.parseInt(args[1]));
+							state = 3;
 							break;
 						case 2:
 							System.out.println("Position geste");
-							if (!(rectangle == null)) {
-								try {
-									rectangle.setPosition(
-											Integer.parseInt(args[0]),
-											Integer.parseInt(args[1]));
-									bus.sendMsg("Palette:CreerRectangle x="
-											+ args[0] 
-											+ " y=" 
-											+ args[1] 
-											+ " couleurFond=" + rectangle.getColor());
-								} catch (IvyException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							} else if (!(ellipse == null)) {
-								ellipse.setPosition(
-										Integer.parseInt(args[0]),
-										Integer.parseInt(args[1]));
-
-								try {
-									bus.sendMsg("Palette:CreerEllipse x="
-											+ args[0] 
-											+ " y=" 
-											+ args[1] 
-											+ " couleurFond=" + ellipse.getColor());
-								} catch (IvyException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
+							command.getGeometry().setPosition(
+									Integer.parseInt(args[0]),
+									Integer.parseInt(args[1]));
+							if (colorPos != null) {
+								command.getGeometry().setColor(colorPos);
 							}
-							rectangle = null;
-							ellipse = null;
-							state = 0;
+							if (command.getGeometry().getColor() != null) {
+								try {
+									bus.sendMsg("Palette:" + command.getAction() + " x=" 
+											+ command.getGeometry().getPosition().getX() 
+											+ " y="
+											+ command.getGeometry().getPosition().getY()
+											+ " couleurFond=" + command.getGeometry().getColor());
+									command.setGeometry(null);
+									state = 0;
+								} catch (IvyException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							} else {
+								state = 1;
+							}
 							break;
 						case 3:
-							break;
-						case 4:
 							break;
 						default: break;
 					}
 				}
 			
 			});
+			bus.bindMsg("Palette:ResultatTesterPoint x=(.*) y=(.*) nom=(.*)", new IvyMessageListener() {
 
+				@Override
+				public void receive(IvyClient client, String[] args) {
+					switch(state) {
+						case 0: break;
+						case 1: break;
+						case 2: break;
+						case 3:
+							System.out.println("Résultat point");
+							try {
+								System.out.println("Demander info");
+								bus.sendMsg("Palette:DemanderInfo nom=" + args[2]);
+							} catch (IvyException e) {
+								e.printStackTrace();
+							}
+							break;
+						default: break;
+					}					
+				}
+			
+			});
+			bus.bindMsg("Palette:Info nom=(.*) x=(.*) y=(.*) longueur=(.*) hauteur=(.*) couleurFond=(.*) couleurContour=(.*)", new IvyMessageListener() {
+
+				@Override
+				public void receive(IvyClient client, String[] args) {
+					switch(state) {
+						case 0: break;
+						case 1: break;
+						case 2: break;
+						case 3:
+							System.out.println("Infos");
+							System.out.println(args[5]);
+							command.getGeometry().setColor(ColorTranslator.translateColor(args[5]));
+							if (command.getGeometry().getPosition().getX() != 0 
+									&& command.getGeometry().getPosition().getY() != 0) {
+								try {
+									bus.sendMsg("Palette:" + command.getAction() + " x=" 
+											+ command.getGeometry().getPosition().getX() 
+											+ " y="
+											+ command.getGeometry().getPosition().getY()
+											+ " couleurFond=" + command.getGeometry().getColor());
+									command.setGeometry(null);
+									state = 0;
+								} catch (IvyException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							} else {
+								colorPos = args[5];
+								state = 1;
+							}
+							break;
+						default: break;
+					}
+				}
+			
+			});
 		} catch (IvyException e) {
 			e.printStackTrace();
 		}

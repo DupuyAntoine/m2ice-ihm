@@ -65,4 +65,10 @@ public class Ellipse implements Geometry {
 		this.coords.setY(y);
 	}
 
+	@Override
+	public Coords getPosition() {
+		// TODO Auto-generated method stub
+		return this.coords;
+	}
+
 }

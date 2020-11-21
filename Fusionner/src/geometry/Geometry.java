@@ -7,5 +7,6 @@ public interface Geometry {
 	public String getName();
 	public String getColor();
 	public void setPosition(int x, int y);
+	public Coords getPosition();
 
 }

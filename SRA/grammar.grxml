@@ -30,6 +30,10 @@
         <tag>out="cette ellipse";</tag>
       </item>
       <item>
+        <ruleref uri="#thiscolor"/>
+        <tag>out="de cette couleur";</tag>
+      </item>
+      <item>
         <ruleref uri="#bleu"/>
         <tag>out="bleu";</tag>
       </item>
@@ -63,6 +67,9 @@
   </rule>
   <rule id="ellipse">
     cette ellipse
+  </rule>
+  <rule id="thiscolor">
+    de cette couleur
   </rule>
   <rule id="bleu">
     bleu

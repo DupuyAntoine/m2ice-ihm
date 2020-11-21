@@ -26,7 +26,7 @@ public class Recognizer {
 	public Recognizer() throws IOException, ClassNotFoundException {
 		this.state = 0;
 		distance = 0;
-		FileInputStream file = new FileInputStream ("C:\\Users\\AdminEtu\\Desktop\\Antoine\\M2ICE\\IHM\\Projet\\forms.ser"); 
+		FileInputStream file = new FileInputStream ("C:\\Users\\AdminEtu\\Desktop\\Antoine\\M2ICE\\IHM\\Projet\\geometries.ser"); 
 		ObjectInputStream in = new ObjectInputStream (file); 
 		
 		// Method for deserialization of object
@@ -140,15 +140,15 @@ public class Recognizer {
 							try {
 								if (type.equals("rectangle")) {
 									System.out.println("rectangle");
-									bus.sendMsg("GestureRecognizer:Rectangle");
+									bus.sendMsg("GestureRecognizer:Forme=Rectangle");
 									
 								} else if (type.equals("ellipse")) {
 									System.out.println("ellipse");
-									bus.sendMsg("GestureRecognizer:Ellipse");
+									bus.sendMsg("GestureRecognizer:Forme=Ellipse");
 									
 								}else if (type.equals("supprimer")) {
 									System.out.println("supprimer");
-									bus.sendMsg("GestureRecognizer:Supprimer");
+									bus.sendMsg("GestureRecognizer:Forme=Supprimer");
 								}
 							} catch (IvyException e) {
 								// TODO Auto-generated catch block

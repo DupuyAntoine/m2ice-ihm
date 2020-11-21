@@ -104,7 +104,7 @@ public class Learner {
 	public void save () {
 		try {
 			FileOutputStream fileOut =
-			new FileOutputStream("C:\\Users\\AdminEtu\\Desktop\\Antoine\\M2ICE\\IHM\\Projet\\forms.ser");
+			new FileOutputStream("C:\\Users\\AdminEtu\\Desktop\\Antoine\\M2ICE\\IHM\\Projet\\geometries.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(strokes);
 			out.close();
