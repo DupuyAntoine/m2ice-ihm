@@ -26,6 +26,7 @@ public class Recognizer {
 	public Recognizer() throws IOException, ClassNotFoundException {
 		this.state = 0;
 		distance = 0;
+		// TODO: change it to retrieve the file for any user
 		FileInputStream file = new FileInputStream ("C:\\Users\\AdminEtu\\Desktop\\Antoine\\M2ICE\\IHM\\Projet\\geometries.ser"); 
 		ObjectInputStream in = new ObjectInputStream (file); 
 		
@@ -116,6 +117,7 @@ public class Recognizer {
 						double y = 0;
 						String type = "";
 						for (HashMap.Entry<Stroke, String> m : strokes.entrySet()) {
+							System.out.println(m);
 							d = 0;
 							ArrayList<Double> s =  ((Stroke) m.getKey()).getPoints();
 							ArrayList<Double> s2 =  stroke.getPoints();
@@ -136,19 +138,20 @@ public class Recognizer {
 						System.out.println(min);
 						
 						
-						if (min < 1000) {
+						if (min < 2000) {
 							try {
 								if (type.equals("rectangle")) {
 									System.out.println("rectangle");
 									bus.sendMsg("GestureRecognizer:Forme=Rectangle");
-									
 								} else if (type.equals("ellipse")) {
 									System.out.println("ellipse");
 									bus.sendMsg("GestureRecognizer:Forme=Ellipse");
-									
 								}else if (type.equals("supprimer")) {
 									System.out.println("supprimer");
 									bus.sendMsg("GestureRecognizer:Forme=Supprimer");
+								}else if (type.equals("deplacer")) {
+									System.out.println("deplacer");
+									bus.sendMsg("GestureRecognizer:Forme=Deplacer");
 								}
 							} catch (IvyException e) {
 								// TODO Auto-generated catch block

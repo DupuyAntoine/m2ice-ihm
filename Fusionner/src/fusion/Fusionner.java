@@ -1,8 +1,5 @@
 package fusion;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import colortranslator.ColorTranslator;
 import fr.dgac.ivy.Ivy;
 import fr.dgac.ivy.IvyApplicationListener;
@@ -11,7 +8,6 @@ import fr.dgac.ivy.IvyException;
 import fr.dgac.ivy.IvyMessageListener;
 import geometry.Coords;
 import geometry.Ellipse;
-import geometry.Geometry;
 import geometry.Rectangle;
 
 
@@ -21,6 +17,8 @@ public class Fusionner {
 	int timer = 3;
 	Coords coordsColor = new Coords();
 	String colorPos;
+	Coords coordsDeplacement = new Coords();
+	String objToMove;
 	Command command = new Command();
 	
 	public Fusionner() {
@@ -88,6 +86,9 @@ public class Fusionner {
 							break;
 						case 3:
 							break;
+						case 6:
+							System.out.println("Déplacement ici");
+							state = 8;
 						default: break;
 					}
 				}
@@ -138,6 +139,10 @@ public class Fusionner {
 							System.out.println("Suppression de cet objet");
 							state = 5;
 							break;
+						case 6:
+							System.out.println("Déplacement de cet objet");
+							state = 7;
+							break;
 						default: break;
 					}
 				}
@@ -158,15 +163,19 @@ public class Fusionner {
 								command.setGeometry(rect);
 								command.setAction("CreerRectangle");
 							}
-							if (args[0].equals("Ellipse")) {
+							else if (args[0].equals("Ellipse")) {
 								state = 1;
 								Ellipse ellipse = new Ellipse("E");
 								command.setGeometry(ellipse);
 								command.setAction("CreerEllipse");
 							}
-							if (args[0].equals("Supprimer")) {
+							else if (args[0].equals("Supprimer")) {
 								command.setAction("SupprimerObjet");
 								state = 4;
+							}
+							else if (args[0].equals("Deplacer")) {
+								command.setAction("DeplacerObjetAbsolu");
+								state = 6;
 							}
 							break;
 						case 1: break;
@@ -232,7 +241,41 @@ public class Fusionner {
 								e1.printStackTrace();
 							}
 							break;
-
+						case 6:
+							break;
+						case 7:
+							try {
+								System.out.println("Test point");
+								bus.sendMsg("Palette:TesterPoint x=" 
+										+ Integer.parseInt(args[0])
+										+ " y="
+										+ Integer.parseInt(args[1]));
+							} catch (IvyException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							break;
+						case 8:
+							System.out.println("Position déplacement");
+							coordsDeplacement.setX(Integer.parseInt(args[0]));
+							coordsDeplacement.setY(Integer.parseInt(args[1]));
+							if (objToMove != null) {
+								try {
+									bus.sendMsg("Palette:" 
+											+ command.getAction() 
+											+ " nom=" + objToMove
+											+ " x=" + coordsDeplacement.getX()
+											+ " y=" + coordsDeplacement.getY());
+									objToMove = null;
+									state = 0;
+								} catch (IvyException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							} else {
+								state = 6;
+							}
+							break;
 						default: break;
 					}
 				}
@@ -268,6 +311,26 @@ public class Fusionner {
 								e.printStackTrace();
 							}
 							break;
+						case 7:
+							System.out.println("Résultat point");
+							try {
+								System.out.println("Demander info");
+								if (coordsDeplacement.getX() != 0 && coordsDeplacement.getY() != 0) {
+									bus.sendMsg("Palette:" 
+											+ command.getAction() 
+											+ " nom=" + args[2]
+											+ " x=" + coordsDeplacement.getX()
+											+ " y=" + coordsDeplacement.getY());
+									objToMove = null;
+									state = 0;
+								} else {
+									objToMove = args[2];
+									state = 6;
+								}
+							} catch (IvyException e) {
+								e.printStackTrace();
+							}
+							break;
 						default: break;
 					}					
 				}
@@ -283,7 +346,6 @@ public class Fusionner {
 						case 2: break;
 						case 3:
 							System.out.println("Infos");
-							System.out.println(args[5]);
 							command.getGeometry().setColor(ColorTranslator.translateColor(args[5]));
 							if (command.getGeometry().getPosition().getX() != 0 
 									&& command.getGeometry().getPosition().getY() != 0) {

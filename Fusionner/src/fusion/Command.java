@@ -29,12 +29,10 @@ public class Command {
 	}
 
 	public Geometry getGeometry() {
-		// TODO Auto-generated method stub
 		return this.geometry;
 	}
 
 	public String getAction() {
-		// TODO Auto-generated method stub
 		return this.action;
 	}
 
