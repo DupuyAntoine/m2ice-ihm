@@ -1,5 +1,8 @@
 package fusion;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import colortranslator.ColorTranslator;
 import fr.dgac.ivy.Ivy;
 import fr.dgac.ivy.IvyApplicationListener;
@@ -14,7 +17,7 @@ import geometry.Rectangle;
 public class Fusionner {
 	
 	int state = 0;
-	int timer = 3;
+	Timer timer = new Timer();
 	Coords coordsColor = new Coords();
 	String colorPos;
 	Coords coordsDeplacement = new Coords();
@@ -60,7 +63,7 @@ public class Fusionner {
 							System.out.println("Je reçois la couleur " + args[0]);
 							color = ColorTranslator.translateColor(args[0]);
 							System.out.println("Couleur: " + color);
-							command.getGeometry().setColor(color);								
+							command.getGeometry().setColor(color);	
 							break;
 						case 2:
 							break;
