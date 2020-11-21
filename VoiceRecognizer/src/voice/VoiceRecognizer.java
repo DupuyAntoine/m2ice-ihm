@@ -1,5 +1,8 @@
 package voice;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import fr.dgac.ivy.Ivy;
 import fr.dgac.ivy.IvyApplicationListener;
 import fr.dgac.ivy.IvyClient;
@@ -10,7 +13,11 @@ import fr.dgac.ivy.IvyMessageListener;
 public class VoiceRecognizer {
 
 	Ivy bus;
-
+	ArrayList<String> colors = new ArrayList<String>(
+			Arrays.asList("rouge", "bleu", "vert", "noir"));
+	ArrayList<String> positions = new ArrayList<String>(
+			Arrays.asList("ici", "la", "a cette position"));
+	
 	public VoiceRecognizer() {
 		Ivy bus = new Ivy("VoiceRecognizer", "...Initialisation VoiceRecognizer...", new IvyApplicationListener() {
 			
@@ -47,7 +54,11 @@ public class VoiceRecognizer {
 						String readableFloat = args[1].replace(",", ".");
 						Float confidence = Float.parseFloat(readableFloat);
 						if (confidence > 0.5 && !word.contains("...")) {
-							bus.sendMsg("VoiceRecognizer:" + word);
+							if (colors.contains(word)) {
+								bus.sendMsg("VoiceRecognizer:Color=" + word);
+							} else if (positions.contains(word)) {
+								bus.sendMsg("VoiceRecognizer:Position=" + word);
+							}
 						}
 					} catch (IvyException e) {
 						// TODO Auto-generated catch block

@@ -67,6 +67,20 @@ public class Recognizer {
 		try {
 			bus.start("localhost:2010");
 			
+			bus.bindMsg("Palette:MouseClicked x=(.*) y=(.*)", new IvyMessageListener() {
+
+				@Override
+				public void receive(IvyClient client, String[] args) {
+					try {
+						bus.sendMsg("GestureRecognizer:Position x=" + args[0] + " y=" + args[1]);
+					} catch (IvyException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			});
+			
 			bus.bindMsg("Palette:MouseDragged x=(.*) y=(.*)", new IvyMessageListener() {
 
 				@Override
@@ -74,7 +88,6 @@ public class Recognizer {
 					if (state == 1 || state == 2) {
 						state = 2;
 						stroke.addPoint(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
-						
 					}
 				}
 				
@@ -95,53 +108,56 @@ public class Recognizer {
 
 				@Override
 				public void receive(IvyClient client, String[] args) {
-					state = 0;
-					stroke.normalize();
-					double min = 999999999; // Max value for double
-					double d = 0;
-					double x = 0;
-					double y = 0;
-					String type = "";
-					for (HashMap.Entry<Stroke, String> m : strokes.entrySet()) {
-						d = 0;
-						ArrayList<Double> s =  ((Stroke) m.getKey()).getPoints();
-						ArrayList<Double> s2 =  stroke.getPoints();
-						for (int cpt = 0; cpt < stroke.getPoints().size(); cpt++) {
-
-							x = Math.abs(s.get(cpt).getX() - s2.get(cpt).getX());
-							y = Math.abs(s.get(cpt).getY() - s2.get(cpt).getY());
-							d += x + y;
-
-						}
-
-						if (d < min) {
-							type = (String) m.getValue();
-							min = d;
-						}
-			        }
-					
-					System.out.println(min);
-					
-					
-					if (min < 1000) {
-						try {
-							if (type.equals("rectangle")) {
-								System.out.println("rectangle");
-								bus.sendMsg("Recognizer:Rectangle");
-								
-							} else if (type.equals("ellipse")) {
-								System.out.println("ellipse");
-								bus.sendMsg("Recognizer:Ellipse");
-								
-							}else if (type.equals("supprimer")) {
-								System.out.println("supprimer");
-								bus.sendMsg("Recognizer:Supprimer");
+					if (state == 2) {
+						stroke.normalize();
+						double min = 999999999; // Max value for double
+						double d = 0;
+						double x = 0;
+						double y = 0;
+						String type = "";
+						for (HashMap.Entry<Stroke, String> m : strokes.entrySet()) {
+							d = 0;
+							ArrayList<Double> s =  ((Stroke) m.getKey()).getPoints();
+							ArrayList<Double> s2 =  stroke.getPoints();
+							for (int cpt = 0; cpt < stroke.getPoints().size(); cpt++) {
+	
+								x = Math.abs(s.get(cpt).getX() - s2.get(cpt).getX());
+								y = Math.abs(s.get(cpt).getY() - s2.get(cpt).getY());
+								d += x + y;
+	
 							}
-						} catch (IvyException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+	
+							if (d < min) {
+								type = (String) m.getValue();
+								min = d;
+							}
+				        }
+						
+						System.out.println(min);
+						
+						
+						if (min < 1000) {
+							try {
+								if (type.equals("rectangle")) {
+									System.out.println("rectangle");
+									bus.sendMsg("GestureRecognizer:Rectangle");
+									
+								} else if (type.equals("ellipse")) {
+									System.out.println("ellipse");
+									bus.sendMsg("GestureRecognizer:Ellipse");
+									
+								}else if (type.equals("supprimer")) {
+									System.out.println("supprimer");
+									bus.sendMsg("GestureRecognizer:Supprimer");
+								}
+							} catch (IvyException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
+						state = 0;
 					}
+
 				}				
 			});
 			

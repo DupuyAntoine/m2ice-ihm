@@ -1,17 +1,21 @@
 package fusion;
 
-import geometry.Coords;
 import geometry.Geometry;
 
 public class Command {
 
 	Geometry geometry;
-	Coords position;
-	
+	String command;
+	Boolean isComplete;
 
 	public Command() {
 		this.geometry = null;
-		this.position = new Coords(0, 0);
+		this.isComplete = false;
+	}
+	
+	public void clear() {
+		this.geometry = null;
+		this.isComplete = false;
 	}
 
 }
