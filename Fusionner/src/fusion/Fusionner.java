@@ -1,7 +1,7 @@
 package fusion;
 
 import java.util.Timer;
-import java.util.TimerTask;
+// import java.util.TimerTask;
 
 import colortranslator.ColorTranslator;
 import fr.dgac.ivy.Ivy;
@@ -57,17 +57,11 @@ public class Fusionner {
 				public void receive(IvyClient client, String[] args) {
 					String color;
 					switch(state) {
-						case 0:
-							break;
 						case 1:
 							System.out.println("Je reçois la couleur " + args[0]);
 							color = ColorTranslator.translateColor(args[0]);
 							System.out.println("Couleur: " + color);
-							command.getGeometry().setColor(color);	
-							break;
-						case 2:
-							break;
-						case 3:
+							command.getGeometry().setColor(color);
 							break;
 						default: break;
 					}
@@ -79,15 +73,9 @@ public class Fusionner {
 				@Override
 				public void receive(IvyClient client, String[] args) {
 					switch(state) {
-						case 0:
-							break;
 						case 1:
 							System.out.println("Position vocale");
 							state = 2;
-							break;
-						case 2:
-							break;
-						case 3:
 							break;
 						case 6:
 							System.out.println("Déplacement ici");
@@ -102,12 +90,6 @@ public class Fusionner {
 				@Override
 				public void receive(IvyClient client, String[] args) {
 					switch(state) {
-						case 0:
-							break;
-						case 1:
-							break;
-						case 2:
-							break;
 						case 3:
 							try {
 								System.out.println("Test point");
@@ -130,14 +112,6 @@ public class Fusionner {
 				@Override
 				public void receive(IvyClient client, String[] args) {
 					switch(state) {
-						case 0:
-							break;
-						case 1:
-							break;
-						case 2:
-							break;
-						case 3:
-							break;
 						case 4:
 							System.out.println("Suppression de cet objet");
 							state = 5;
@@ -181,9 +155,6 @@ public class Fusionner {
 								state = 6;
 							}
 							break;
-						case 1: break;
-						case 2: break;
-						case 3: break;
 						default: break;
 					}
 				}
@@ -195,8 +166,6 @@ public class Fusionner {
 				@Override
 				public void receive(IvyClient client, String[] args) {
 					switch(state) {
-						case 0:
-							break;
 						case 1:
 							System.out.println("Position couleur");
 							coordsColor.setX(Integer.parseInt(args[0]));
@@ -228,10 +197,6 @@ public class Fusionner {
 								state = 1;
 							}
 							break;
-						case 3:
-							break;
-						case 4:
-							break;
 						case 5:
 							try {
 								System.out.println("Test point");
@@ -243,8 +208,6 @@ public class Fusionner {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
-							break;
-						case 6:
 							break;
 						case 7:
 							try {
@@ -289,9 +252,6 @@ public class Fusionner {
 				@Override
 				public void receive(IvyClient client, String[] args) {
 					switch(state) {
-						case 0: break;
-						case 1: break;
-						case 2: break;
 						case 3:
 							System.out.println("Résultat point");
 							try {
@@ -344,9 +304,6 @@ public class Fusionner {
 				@Override
 				public void receive(IvyClient client, String[] args) {
 					switch(state) {
-						case 0: break;
-						case 1: break;
-						case 2: break;
 						case 3:
 							System.out.println("Infos");
 							command.getGeometry().setColor(ColorTranslator.translateColor(args[5]));
