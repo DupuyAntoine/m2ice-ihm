@@ -21,7 +21,6 @@ public class Fusionner {
 	int timer = 3;
 	Coords coordsColor = new Coords();
 	String colorPos;
-	List<Geometry> geometries = new LinkedList<>();
 	Command command = new Command();
 	
 	public Fusionner() {
@@ -122,6 +121,28 @@ public class Fusionner {
 				}
 
 			});
+			bus.bindMsg("VoiceRecognizer:ThisObject=(.*)", new IvyMessageListener() {
+
+				@Override
+				public void receive(IvyClient client, String[] args) {
+					switch(state) {
+						case 0:
+							break;
+						case 1:
+							break;
+						case 2:
+							break;
+						case 3:
+							break;
+						case 4:
+							System.out.println("Suppression de cet objet");
+							state = 5;
+							break;
+						default: break;
+					}
+				}
+
+			});
 
 			bus.bindMsg("GestureRecognizer:Forme=(.*)", new IvyMessageListener() {
 				
@@ -133,33 +154,24 @@ public class Fusionner {
 							if (args[0].equals("Rectangle")) {
 								
 								state = 1;
-								Rectangle rect = new Rectangle(
-										"R" + Integer.toString(geometries.size() + 1));
+								Rectangle rect = new Rectangle("R");
 								command.setGeometry(rect);
 								command.setAction("CreerRectangle");
-								geometries.add(rect);
 							}
 							if (args[0].equals("Ellipse")) {
 								state = 1;
-								Ellipse ellipse = new Ellipse(
-										"E" + Integer.toString(geometries.size() + 1));
+								Ellipse ellipse = new Ellipse("E");
 								command.setGeometry(ellipse);
 								command.setAction("CreerEllipse");
-								geometries.add(ellipse);
 							}
 							if (args[0].equals("Supprimer")) {
-								try {
-									for (Geometry g : geometries) {
-										bus.sendMsg("Palette:SupprimerObjet nom=" + g.getName());
-									}
-								} catch (IvyException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
+								command.setAction("SupprimerObjet");
+								state = 4;
 							}
 							break;
-						case 1:
-						case 2:
+						case 1: break;
+						case 2: break;
+						case 3: break;
 						default: break;
 					}
 				}
@@ -206,6 +218,21 @@ public class Fusionner {
 							break;
 						case 3:
 							break;
+						case 4:
+							break;
+						case 5:
+							try {
+								System.out.println("Test point");
+								bus.sendMsg("Palette:TesterPoint x=" 
+										+ Integer.parseInt(args[0])
+										+ " y="
+										+ Integer.parseInt(args[1]));
+							} catch (IvyException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							break;
+
 						default: break;
 					}
 				}
@@ -224,6 +251,19 @@ public class Fusionner {
 							try {
 								System.out.println("Demander info");
 								bus.sendMsg("Palette:DemanderInfo nom=" + args[2]);
+							} catch (IvyException e) {
+								e.printStackTrace();
+							}
+							break;
+						case 4:
+							break;
+						case 5:
+							System.out.println("Résultat point");
+							try {
+								System.out.println("Demander info");
+								bus.sendMsg("Palette:" + command.getAction() + " nom=" + args[2]);
+								command.setGeometry(null);
+								state = 0;
 							} catch (IvyException e) {
 								e.printStackTrace();
 							}

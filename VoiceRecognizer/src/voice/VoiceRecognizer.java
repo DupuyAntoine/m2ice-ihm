@@ -19,6 +19,8 @@ public class VoiceRecognizer {
 			Arrays.asList("ici", "la", "a cette position"));
 	ArrayList<String> vocalClicColors = new ArrayList<String>(
 			Arrays.asList("de cette couleur"));
+	ArrayList<String> thisObject = new ArrayList<String>(
+			Arrays.asList("cet objet"));
 	
 	public VoiceRecognizer() {
 		Ivy bus = new Ivy("VoiceRecognizer", "...Initialisation VoiceRecognizer...", new IvyApplicationListener() {
@@ -62,6 +64,8 @@ public class VoiceRecognizer {
 								bus.sendMsg("VoiceRecognizer:Position=" + word);
 							} else if (vocalClicColors.contains(word)) {
 								bus.sendMsg("VoiceRecognizer:ThisColor=" + word);
+							} else if (thisObject.contains(word)) {
+								bus.sendMsg("VoiceRecognizer:ThisObject=" + word);
 							}
 						}
 					} catch (IvyException e) {

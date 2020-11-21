@@ -22,14 +22,6 @@
         <tag>out="cet objet";</tag>
       </item>
       <item>
-        <ruleref uri="#rectangle"/>
-        <tag>out="ce rectangle";</tag>
-      </item>
-      <item>
-        <ruleref uri="#ellipse"/>
-        <tag>out="cette ellipse";</tag>
-      </item>
-      <item>
         <ruleref uri="#thiscolor"/>
         <tag>out="de cette couleur";</tag>
       </item>
@@ -61,12 +53,6 @@
   </rule>
   <rule id="objet">
     cet objet
-  </rule>
-  <rule id="rectangle">
-    ce rectangle
-  </rule>
-  <rule id="ellipse">
-    cette ellipse
   </rule>
   <rule id="thiscolor">
     de cette couleur
