@@ -2,6 +2,7 @@ package fusion;
 
 import java.util.Timer;
 // import java.util.TimerTask;
+import java.util.TimerTask;
 
 import colortranslator.ColorTranslator;
 import fr.dgac.ivy.Ivy;
@@ -17,9 +18,11 @@ import geometry.Rectangle;
 public class Fusionner {
 	
 	int state = 0;
-	Timer timer = new Timer();
+	Timer timer;
 	Coords coordsColor = new Coords();
 	String colorPos;
+	String colorRem;
+	String colorMove;
 	Coords coordsDeplacement = new Coords();
 	String objToMove;
 	Command command = new Command();
@@ -51,6 +54,9 @@ public class Fusionner {
 	
 		try {
 			bus.start("localhost:2010");
+			
+			/* VOICE RECOGNIZER REGION */
+			
 			bus.bindMsg("VoiceRecognizer:Color=(.*)", new IvyMessageListener() {
 	
 				@Override
@@ -62,6 +68,20 @@ public class Fusionner {
 							color = ColorTranslator.translateColor(args[0]);
 							System.out.println("Couleur: " + color);
 							command.getGeometry().setColor(color);
+							break;
+						case 5:
+							System.out.println("Je reçois la couleur " + args[0]);
+							colorRem = ColorTranslator.translateColor(args[0]);
+							if (command.getGeometry() != null) {
+								command.getGeometry().setColor(colorMove);
+							}
+						case 7:
+							System.out.println("Je reçois la couleur " + args[0]);
+							colorMove = ColorTranslator.translateColor(args[0]);
+							System.out.println("Couleur: " + colorMove);
+							if (command.getGeometry() != null) {
+								command.getGeometry().setColor(colorMove);
+							}
 							break;
 						default: break;
 					}
@@ -107,6 +127,7 @@ public class Fusionner {
 				}
 
 			});
+
 			bus.bindMsg("VoiceRecognizer:ThisObject=(.*)", new IvyMessageListener() {
 
 				@Override
@@ -125,6 +146,10 @@ public class Fusionner {
 				}
 
 			});
+			
+			/* VOICE RECOGNIZER END REGION */
+			
+			/* GESTURE RECOGNIZER REGION */
 
 			bus.bindMsg("GestureRecognizer:Forme=(.*)", new IvyMessageListener() {
 				
@@ -132,9 +157,9 @@ public class Fusionner {
 				public void receive(IvyClient client, String[] args) {
 					switch (state) {
 						case 0:
-							System.out.println("Forme");
+							timer = new Timer();
+							System.out.println("Forme" + args[0]);
 							if (args[0].equals("Rectangle")) {
-								
 								state = 1;
 								Rectangle rect = new Rectangle("R");
 								command.setGeometry(rect);
@@ -147,6 +172,7 @@ public class Fusionner {
 								command.setAction("CreerEllipse");
 							}
 							else if (args[0].equals("Supprimer")) {
+								System.out.println("je vais suppr");
 								command.setAction("SupprimerObjet");
 								state = 4;
 							}
@@ -247,6 +273,11 @@ public class Fusionner {
 				}
 			
 			});
+			
+			/* GESTURE RECOGNIZER END REGION */
+			
+			/* PALETTE REGION */
+			
 			bus.bindMsg("Palette:ResultatTesterPoint x=(.*) y=(.*) nom=(.*)", new IvyMessageListener() {
 
 				@Override
@@ -267,9 +298,12 @@ public class Fusionner {
 							System.out.println("Résultat point");
 							try {
 								System.out.println("Demander info");
-								bus.sendMsg("Palette:" + command.getAction() + " nom=" + args[2]);
-								command.setGeometry(null);
-								state = 0;
+								if (args[2].contains("E")) {
+									command.setGeometry(new Ellipse(args[2]));
+								} else if (args[2].contains("R")) {
+									command.setGeometry(new Rectangle(args[2]));
+								}
+								bus.sendMsg("Palette:DemanderInfo nom=" + args[2]);
 							} catch (IvyException e) {
 								e.printStackTrace();
 							}
@@ -278,18 +312,12 @@ public class Fusionner {
 							System.out.println("Résultat point");
 							try {
 								System.out.println("Demander info");
-								if (coordsDeplacement.getX() != 0 && coordsDeplacement.getY() != 0) {
-									bus.sendMsg("Palette:" 
-											+ command.getAction() 
-											+ " nom=" + args[2]
-											+ " x=" + coordsDeplacement.getX()
-											+ " y=" + coordsDeplacement.getY());
-									objToMove = null;
-									state = 0;
-								} else {
-									objToMove = args[2];
-									state = 6;
+								if (args[2].contains("E")) {
+									command.setGeometry(new Ellipse(args[2]));
+								} else if (args[2].contains("R")) {
+									command.setGeometry(new Rectangle(args[2]));
 								}
+								bus.sendMsg("Palette:DemanderInfo nom=" + args[2]);
 							} catch (IvyException e) {
 								e.printStackTrace();
 							}
@@ -299,6 +327,7 @@ public class Fusionner {
 				}
 			
 			});
+
 			bus.bindMsg("Palette:Info nom=(.*) x=(.*) y=(.*) longueur=(.*) hauteur=(.*) couleurFond=(.*) couleurContour=(.*)", new IvyMessageListener() {
 
 				@Override
@@ -326,15 +355,74 @@ public class Fusionner {
 								state = 1;
 							}
 							break;
+						case 5:
+							System.out.println("Infos");
+							timer.schedule(new TimerTask() {
+
+								@Override
+								public void run() {
+									if (colorRem != null && !colorRem.equals(args[5])) {
+										command.setGeometry(null);
+										state = 0;
+									} else if (colorRem == null || colorRem.equals(args[5])) {
+										try {
+											bus.sendMsg("Palette:" + command.getAction() + " nom=" + args[0]);
+										} catch (IvyException e) {
+											e.printStackTrace();
+										}
+										state = 0;
+									}
+								}
+								
+							}, 3000);
+							break;
+						case 7:
+							System.out.println("Infos");
+							if (coordsDeplacement.getX() != 0 && coordsDeplacement.getY() != 0) {
+								timer.schedule(new TimerTask() {
+
+									@Override
+									public void run() {
+										if (colorMove != null && !colorMove.equals(args[5])) {
+											command.setGeometry(null);
+											state = 0;
+										} else if (colorMove == null || colorMove.equals(args[5])) {
+											try {
+												bus.sendMsg("Palette:" 
+														+ command.getAction() 
+														+ " nom=" + command.getGeometry().getName()
+														+ " x=" + coordsDeplacement.getX()
+														+ " y=" + coordsDeplacement.getY());
+											} catch (IvyException e) {
+												e.printStackTrace();
+											}
+											coordsDeplacement = new Coords();
+											state = 0;
+										}
+									}
+									
+								}, 3000);
+								objToMove = null;
+								state = 0;
+							} else {
+								objToMove = args[0];
+								state = 6;
+							}
+							break;
 						default: break;
 					}
 				}
 			
 			});
+			
+			/* PALETTE END REGION */
+
 		} catch (IvyException e) {
 			e.printStackTrace();
 		}
+
 	}
+	
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

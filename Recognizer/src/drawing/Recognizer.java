@@ -138,7 +138,7 @@ public class Recognizer {
 						System.out.println(min);
 						
 						
-						if (min < 2000) {
+						if (min < 1000) {
 							try {
 								if (type.equals("rectangle")) {
 									System.out.println("rectangle");

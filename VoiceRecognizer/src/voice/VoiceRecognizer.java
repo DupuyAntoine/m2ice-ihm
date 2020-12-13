@@ -57,7 +57,7 @@ public class VoiceRecognizer {
 						String word = args[0];
 						String readableFloat = args[1].replace(",", ".");
 						Float confidence = Float.parseFloat(readableFloat);
-						if (confidence > 0.5 && !word.contains("...")) {
+						if (confidence > 0.8 && !word.contains("...")) {
 							if (colors.contains(word)) {
 								bus.sendMsg("VoiceRecognizer:Color=" + word);
 							} else if (positions.contains(word)) {
