@@ -95,10 +95,30 @@ public class Fusionner {
 					switch(state) {
 						case 1:
 							System.out.println("Position vocale");
+							timer.schedule(new TimerTask() {
+
+								@Override
+								public void run() {
+									if (state == 2) {
+										state = 1;
+									}
+								}
+								
+							}, 5000);
 							state = 2;
 							break;
 						case 6:
 							System.out.println("Déplacement ici");
+							timer.schedule(new TimerTask() {
+
+								@Override
+								public void run() {
+									if (state == 8) {
+										state = 6;
+									}
+								}
+								
+							}, 5000);
 							state = 8;
 						default: break;
 					}
@@ -121,6 +141,16 @@ public class Fusionner {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
+							timer.schedule(new TimerTask() {
+
+								@Override
+								public void run() {
+									if (state == 3) {
+										command.clear();
+										state = 0;
+									}
+								}
+							}, 5000);
 							break;
 						default: break;
 					}
@@ -135,10 +165,31 @@ public class Fusionner {
 					switch(state) {
 						case 4:
 							System.out.println("Suppression de cet objet");
+							timer.schedule(new TimerTask() {
+
+								@Override
+								public void run() {
+									if (state == 5) {
+										state = 4;
+									}
+								}
+								
+							}, 5000);
+
 							state = 5;
 							break;
 						case 6:
 							System.out.println("Déplacement de cet objet");
+							timer.schedule(new TimerTask() {
+
+								@Override
+								public void run() {
+									if (state == 7) {
+										state = 6;
+									}
+								}
+								
+							}, 5000);
 							state = 7;
 							break;
 						default: break;
@@ -158,26 +209,88 @@ public class Fusionner {
 					switch (state) {
 						case 0:
 							timer = new Timer();
-							System.out.println("Forme" + args[0]);
+							System.out.println("Forme " + args[0]);
 							if (args[0].equals("Rectangle")) {
 								state = 1;
 								Rectangle rect = new Rectangle("R");
 								command.setGeometry(rect);
 								command.setAction("CreerRectangle");
+								timer.schedule(new TimerTask() {
+
+									@Override
+									public void run() {
+										if (state == 1) {
+											try {
+												bus.sendMsg("Palette:" + command.getAction()
+														+ " x=" 
+														+ command.getGeometry().getPosition().getX() 
+														+ " y="
+														+ command.getGeometry().getPosition().getY()
+														+ " couleurFond=" + command.getGeometry().getColor());
+											} catch (IvyException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+											command.clear();
+											state = 0;
+										}
+									}
+									
+								}, 10000);
 							}
 							else if (args[0].equals("Ellipse")) {
 								state = 1;
 								Ellipse ellipse = new Ellipse("E");
 								command.setGeometry(ellipse);
 								command.setAction("CreerEllipse");
+								timer.schedule(new TimerTask() {
+
+									@Override
+									public void run() {
+										if (state == 1) {
+											try {
+												bus.sendMsg("Palette:" + command.getAction() +
+														" couleurFond=" + command.getGeometry().getColor());
+											} catch (IvyException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+											command.clear();
+											state = 0;
+										}
+									}
+									
+								}, 10000);
 							}
 							else if (args[0].equals("Supprimer")) {
 								System.out.println("je vais suppr");
 								command.setAction("SupprimerObjet");
+								timer.schedule(new TimerTask() {
+
+									@Override
+									public void run() {
+										if (state == 4) {
+											command.clear();
+											state = 0;
+										}
+									}
+									
+								}, 10000);
 								state = 4;
 							}
 							else if (args[0].equals("Deplacer")) {
 								command.setAction("DeplacerObjetAbsolu");
+								timer.schedule(new TimerTask() {
+
+									@Override
+									public void run() {
+										if (state == 6) {
+											command.clear();
+											state = 0;
+										}
+									}
+									
+								}, 10000);
 								state = 6;
 							}
 							break;
@@ -196,6 +309,16 @@ public class Fusionner {
 							System.out.println("Position couleur");
 							coordsColor.setX(Integer.parseInt(args[0]));
 							coordsColor.setY(Integer.parseInt(args[1]));
+							timer.schedule(new TimerTask() {
+
+								@Override
+								public void run() {
+									if (state == 3) {
+										state = 1;
+									}
+								}
+								
+							}, 5000);
 							state = 3;
 							break;
 						case 2:
@@ -213,7 +336,7 @@ public class Fusionner {
 											+ " y="
 											+ command.getGeometry().getPosition().getY()
 											+ " couleurFond=" + command.getGeometry().getColor());
-									command.setGeometry(null);
+									command.clear();
 									state = 0;
 								} catch (IvyException e) {
 									// TODO Auto-generated catch block
@@ -230,6 +353,20 @@ public class Fusionner {
 										+ Integer.parseInt(args[0])
 										+ " y="
 										+ Integer.parseInt(args[1]));
+
+								timer.schedule(new TimerTask() {
+
+									@Override
+									public void run() {
+										if (state == 5) {
+											command.clear();
+											state = 0;
+										}
+									}
+									
+								}, 5000);
+								break;
+
 							} catch (IvyException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
@@ -344,7 +481,7 @@ public class Fusionner {
 											+ " y="
 											+ command.getGeometry().getPosition().getY()
 											+ " couleurFond=" + command.getGeometry().getColor());
-									command.setGeometry(null);
+									command.clear();
 									state = 0;
 								} catch (IvyException e) {
 									// TODO Auto-generated catch block
@@ -357,51 +494,40 @@ public class Fusionner {
 							break;
 						case 5:
 							System.out.println("Infos");
-							timer.schedule(new TimerTask() {
-
-								@Override
-								public void run() {
-									if (colorRem != null && !colorRem.equals(args[5])) {
-										command.setGeometry(null);
-										state = 0;
-									} else if (colorRem == null || colorRem.equals(args[5])) {
-										try {
-											bus.sendMsg("Palette:" + command.getAction() + " nom=" + args[0]);
-										} catch (IvyException e) {
-											e.printStackTrace();
-										}
-										state = 0;
-									}
+							if (colorRem != null && !colorRem.equals(args[5])) {
+								command.clear();
+								state = 0;
+							} else if (colorRem == null || colorRem.equals(args[5])) {
+								try {
+									bus.sendMsg("Palette:" + command.getAction() + " nom=" + args[0]);
+								} catch (IvyException e) {
+									e.printStackTrace();
 								}
-								
-							}, 3000);
+								colorRem = null;
+								state = 0;
+							}
 							break;
 						case 7:
 							System.out.println("Infos");
 							if (coordsDeplacement.getX() != 0 && coordsDeplacement.getY() != 0) {
-								timer.schedule(new TimerTask() {
-
-									@Override
-									public void run() {
-										if (colorMove != null && !colorMove.equals(args[5])) {
-											command.setGeometry(null);
-											state = 0;
-										} else if (colorMove == null || colorMove.equals(args[5])) {
-											try {
-												bus.sendMsg("Palette:" 
-														+ command.getAction() 
-														+ " nom=" + command.getGeometry().getName()
-														+ " x=" + coordsDeplacement.getX()
-														+ " y=" + coordsDeplacement.getY());
-											} catch (IvyException e) {
-												e.printStackTrace();
-											}
-											coordsDeplacement = new Coords();
-											state = 0;
-										}
+								if (colorMove != null && !colorMove.equals(args[5])) {
+									command.clear();
+									state = 0;
+								} else if (colorMove == null || colorMove.equals(args[5])) {
+									try {
+										bus.sendMsg("Palette:" 
+												+ command.getAction() 
+												+ " nom=" + command.getGeometry().getName()
+												+ " x=" + coordsDeplacement.getX()
+												+ " y=" + coordsDeplacement.getY());
+									} catch (IvyException e) {
+										e.printStackTrace();
 									}
-									
-								}, 3000);
+									coordsDeplacement = new Coords();
+									state = 0;
+								}
+								coordsDeplacement.setX(0);
+								coordsDeplacement.setY(0);
 								objToMove = null;
 								state = 0;
 							} else {
